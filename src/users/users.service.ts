@@ -8,4 +8,8 @@ export class UsersService {
   async findOne({username}): Promise<User | undefined> {
     return await this.userModel.findOne({username:username}).exec();
   }
+
+  async findOneByID({userID}): Promise<User | undefined> {
+    return await this.userModel.findOne({_id:userID}).exec();
+  }
 }
