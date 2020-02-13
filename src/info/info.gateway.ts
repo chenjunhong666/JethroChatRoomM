@@ -21,7 +21,7 @@ export class InfoGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let userInfo = this.socket_userInfo.get(client.id)
     if (!userInfo)
       return
-    console.log(client.id + " Disconnect")
+    // console.log(client.id + " Disconnect")
     this.socket_userInfo.delete(client.id)
     //删除id
     this.id_socket.delete(userInfo.userID);
@@ -31,7 +31,7 @@ export class InfoGateway implements OnGatewayConnection, OnGatewayDisconnect {
     })
     this.roomValue_socket.get(userInfo.roomValue).splice(index, 1)
     this.roomValue_socket.get(userInfo.roomValue).forEach(socket => {
-      socket.emit("quit", { userName: userInfo.userName, date: Date.now() })
+      socket.emit("quit", { userName: userInfo.userName, date: new Date().toLocaleTimeString() })
     });
   }
   handleConnection(client: any, ...args: any[]) {
@@ -39,20 +39,20 @@ export class InfoGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   @SubscribeMessage('message')
   handleMessage(client: Socket, payload: string): string {
-    console.log("message")
+    // console.log("message")
     let userInfo = this.socket_userInfo.get(client.id)
     this.roomValue_socket.get(userInfo.roomValue).forEach((socket) => {
       if (socket.id != client.id) {
-        socket.emit("message", { userName: userInfo.userName, message: payload, date: Date.now() })
+        socket.emit("message", { userName: userInfo.userName, message: payload, date: new Date().toLocaleTimeString() })
       }
     })
-    return 'ok';
+    return new Date().toLocaleTimeString();
   }
   @SubscribeMessage('enter')
   async handleConnect(client: Socket, payload: any) {
-    console.log(client.id + " enter " + payload.roomValue)
+    // console.log(client.id + " enter " + payload.roomValue)
     if (this.id_socket.has(payload.userID)) {
-      console.log("id duplicate")
+      // console.log("id duplicate")
       const oldSocketID = this.id_socket.get(payload.userID)
       //修改id_socket
       this.id_socket.set(payload.userID, client.id)
@@ -88,7 +88,7 @@ export class InfoGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.roomValue_socket.set(payload.roomValue, []);
       } else {
         this.roomValue_socket.get(payload.roomValue).forEach(socket => {
-          socket.emit("new", { userName: user.username, date: Date.now() })
+          socket.emit("new", { userName: user.username, date: new Date().toLocaleTimeString() })
         });
       }
       this.roomValue_socket.get(payload.roomValue).push(client);
